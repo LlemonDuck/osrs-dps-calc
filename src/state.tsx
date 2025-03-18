@@ -723,6 +723,18 @@ class GlobalState implements State {
     });
   }
 
+  customMonsterFromCurrent() {
+    if (this.monster.id === -1) {
+      // already custom
+      return;
+    }
+
+    this.monster = {
+      ...this.monster,
+      id: -1,
+    };
+  }
+
   /**
    * Clear an equipment slot, removing the item that was inside of it.
    * @param slot

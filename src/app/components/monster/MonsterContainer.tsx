@@ -33,7 +33,7 @@ import {
   TOMBS_OF_AMASCUT_PATH_MONSTER_IDS,
 } from '@/lib/constants';
 import {
-  IconChevronDown, IconChevronUp, IconExternalLink, IconShieldQuestion,
+  IconChevronDown, IconChevronUp, IconExternalLink, IconPencil, IconShieldQuestion,
 } from '@tabler/icons-react';
 import { scaleMonster } from '@/lib/MonsterScaling';
 import { Monster, MonsterCombatStyle } from '@/types/Monster';
@@ -401,12 +401,22 @@ const MonsterContainer: React.FC = observer(() => {
               }
             </div>
             <h2 className="font-serif tracking-tight font-bold leading-4">
-              {monster.name ? monster.name : 'Monster'}
+              {monster.name + (isCustomMonster && monster.name !== 'Custom monster' ? ' (edited)' : '')}
               <br />
               <span className="text-xs text-gray-500 dark:text-gray-300">{monster.version}</span>
             </h2>
           </div>
           {(monster.id > -1) && (
+          <div className="flex justify-between items-end">
+            <button
+              className="px-4 text-gray-500 dark:text-gray-400 dark:hover:text-gray-300 hover:text-gray-400"
+              type="button"
+              title="Edit monster"
+              aria-label="Edit monster"
+              onClick={() => store.customMonsterFromCurrent()}
+            >
+              <IconPencil size={20} />
+            </button>
             <a
               className="text-gray-500 dark:text-gray-400 dark:hover:text-gray-300 hover:text-gray-400"
               href={`https://oldschool.runescape.wiki/w/Special:Lookup?type=npc&id=${monster.id}`}
@@ -416,6 +426,7 @@ const MonsterContainer: React.FC = observer(() => {
             >
               <IconExternalLink size={20} />
             </a>
+          </div>
           )}
         </div>
         {
