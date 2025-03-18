@@ -22,7 +22,7 @@ import { CalcProvider, useCalc } from '@/worker/CalcWorker';
 const Home: NextPage = observer(() => {
   const calc = useCalc();
   const store = useStore();
-  store.debug = process.env && process.env.NODE_ENV === 'development';
+  store.debug = true;
 
   useEffect(() => {
     store.setCalcWorker(calc);
