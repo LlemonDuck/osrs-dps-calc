@@ -847,6 +847,13 @@ class GlobalState implements State {
 
     await Promise.all(promises);
   }
+
+  // llemonduck things, put them all here to minimize conflicts
+  slotFilter: string | undefined;
+
+  setSlotFilter(slotFilter: string | undefined) {
+    this.slotFilter = slotFilter;
+  }
 }
 
 const StoreContext = createContext<GlobalState>(new GlobalState());

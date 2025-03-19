@@ -22,6 +22,8 @@ interface IComboboxProps<T> {
   className?: string;
   CustomItemComponent?: React.FC<{ item: T, itemString: string }>;
   customFilter?: (v: T[], inputValue: string) => T[];
+  setOpener?: (v: () => void) => void;
+  onClose?: () => void;
 }
 
 /**
@@ -48,6 +50,8 @@ const Combobox = <T extends ComboboxItem>(props: IComboboxProps<T>) => {
     className,
     CustomItemComponent,
     customFilter,
+    setOpener,
+    onClose,
   } = props;
   const [inputValue, setInputValue] = useState<string>(value || '');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -85,11 +89,17 @@ const Combobox = <T extends ComboboxItem>(props: IComboboxProps<T>) => {
     isOpen,
     reset,
     setHighlightedIndex,
+    openMenu,
   } = useCombobox({
     id,
     items: filteredItems,
     inputValue,
     itemToString,
+    onIsOpenChange: ({ isOpen: willBeOpen }) => {
+      if (!willBeOpen && onClose) {
+        onClose();
+      }
+    },
     onInputValueChange: ({ inputValue: newValue }) => {
       setInputValue(newValue || '');
       setHighlightedIndex(0);
@@ -147,6 +157,14 @@ const Combobox = <T extends ComboboxItem>(props: IComboboxProps<T>) => {
       return changes;
     },
   });
+
+  useEffect(() => {
+    if (setOpener) {
+      setOpener(() => () => {
+        openMenu();
+      });
+    }
+  }, [setOpener, openMenu]);
 
   return (
     <div>

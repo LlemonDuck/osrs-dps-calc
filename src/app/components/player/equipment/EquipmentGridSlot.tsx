@@ -32,30 +32,37 @@ const EquipmentGridSlot: React.FC<EquipmentGridSlotProps> = observer((props) => 
   };
 
   return (
-    <div className="h-[40px] w-[40px] relative">
-      {
+    <div style={store.slotFilter === slot ? { boxShadow: '0 0 10px yellow' } : {}}>
+      <div className="h-[40px] w-[40px] relative">
+        {
         issues.length > 0 && (
           <UserIssueWarning className="absolute top-[-10px] right-[-10px]" issue={issues[0]} />
         )
       }
-      <button
-        type="button"
-        className={`flex justify-center items-center h-[40px] w-[40px] bg-body-100 dark:bg-dark-400 dark:border-dark-400 border border-body-300 transition-colors rounded ${!isEmpty ? 'cursor-pointer hover:border-red' : ''}`}
-        data-slot={slot}
-        data-tooltip-id="tooltip"
-        data-tooltip-content={getTooltipContent()}
-        onMouseDown={() => {
-          if (!isEmpty) store.clearEquipmentSlot(slot);
-        }}
-      >
-        {currentSlot?.image ? (
-          <img src={getCdnImage(`equipment/${currentSlot.image}`)} alt={currentSlot.name} />
-        ) : (
-          placeholder && (
+        <button
+          type="button"
+          className={`flex justify-center items-center h-[40px] w-[40px] bg-body-100 dark:bg-dark-400 dark:border-dark-400 border border-body-300 transition-colors rounded ${!isEmpty ? 'cursor-pointer hover:border-red' : ''}`}
+          data-slot={slot}
+          data-tooltip-id="tooltip"
+          data-tooltip-content={getTooltipContent()}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            if (isEmpty) {
+              store.setSlotFilter(store.slotFilter === slot ? undefined : slot);
+            } else {
+              store.clearEquipmentSlot(slot);
+            }
+          }}
+        >
+          {currentSlot?.image ? (
+            <img src={getCdnImage(`equipment/${currentSlot.image}`)} alt={currentSlot.name} />
+          ) : (
+            placeholder && (
             <img className="opacity-30 dark:filter dark:invert" src={placeholder} alt={slot} draggable={false} />
-          )
-        )}
-      </button>
+            )
+          )}
+        </button>
+      </div>
     </div>
   );
 });

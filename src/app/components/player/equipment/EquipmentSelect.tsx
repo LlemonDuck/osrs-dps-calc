@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useStore } from '@/state';
 import { observer } from 'mobx-react-lite';
 import { getCdnImage, isDefined } from '@/utils';
@@ -38,8 +38,9 @@ const DARTS: EquipmentPiece[] = [
 
 const EquipmentSelect: React.FC = observer(() => {
   const store = useStore();
+  const { slotFilter } = store;
 
-  const options: EquipmentOption[] = useMemo(() => {
+  const allOptions: EquipmentOption[] = useMemo(() => {
     const blowpipeEntries: EquipmentOption[] = [];
 
     const entries: EquipmentOption[] = [];
@@ -95,6 +96,21 @@ const EquipmentSelect: React.FC = observer(() => {
     return entries;
   }, []);
 
+  const options = useMemo(() => {
+    if (slotFilter) {
+      return allOptions.filter((e) => e.slot === slotFilter);
+    }
+    return allOptions;
+  }, [slotFilter, allOptions]);
+
+  const [opener, setOpener] = useState<() => void>();
+  useEffect(() => {
+    if (slotFilter && opener) {
+      opener();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slotFilter]);
+
   return (
     <Combobox<EquipmentOption>
       id="equipment-select"
@@ -103,6 +119,8 @@ const EquipmentSelect: React.FC = observer(() => {
       keepOpenAfterSelect
       keepPositionAfterSelect
       placeholder="Search for equipment..."
+      setOpener={setOpener}
+      onClose={() => store.setSlotFilter(undefined)}
       onSelectedItemChange={(item) => {
         if (item) {
           store.updatePlayer({
@@ -129,6 +147,11 @@ const EquipmentSelect: React.FC = observer(() => {
         </div>
       )}
       customFilter={(v) => {
+        // if slotFilter is set, only show things belonging to that filter
+        if (store.slotFilter) {
+          v = v.filter((e) => e.slot === store.slotFilter);
+        }
+
         const remainingVariantGroups: { [k: number]: number[] } = {};
         const remainingVariantMemberships: { [k: number]: number } = {}; // reverse map
 
